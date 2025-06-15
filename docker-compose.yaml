@@ -1,0 +1,58 @@
+
+services:
+  api:
+    build:
+      context: ./rpsls_game_api
+    container_name: fastapi_rpsls_game
+    ports:
+      - "${API_PORT}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@$db:5432/${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME}
+      - RANDOM_URL=https://codechallenge.boohma.com/random
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build:
+      context: rpsls_game_frontend
+      args:
+        REACT_APP_API_BASE_URL: http://localhost:8030
+    depends_on:
+      api:
+        condition: service_healthy
+    container_name: react_rpsls_game
+    ports:
+      - "${FRONTEND_PORT}:8080"
+
+  db:
+    image: postgres:15
+    container_name: db_rpsls_game
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:

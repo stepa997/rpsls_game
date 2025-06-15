@@ -1,0 +1,228 @@
+/* App.css */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #ece9e6, #ffffff);
+  color: #333;
+}
+
+.container {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: #222;
+}
+
+.choices {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.choices button {
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+  min-width: 100px;
+}
+
+.choices button:hover {
+  background-color: #4338ca;
+  transform: scale(1.05);
+}
+
+.result {
+  margin-top: 2rem;
+  background-color: #f3f4f6;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  display: inline-block;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.loading {
+  margin-top: 1rem;
+  font-style: italic;
+  color: #888;
+}
+
+.result-message {
+  font-size: 1.5rem;
+  font-weight: bold;
+  animation: flash 0.6s ease-in-out;
+  color: #2563eb; /* plava */
+}
+
+@keyframes flash {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.history-table-container {
+  overflow-x: auto;
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.history-table {
+  border-collapse: collapse;
+  width: 90%;
+  max-width: 700px;
+  font-family: sans-serif;
+  font-size: 1rem;
+}
+
+.history-table th,
+.history-table td {
+  border: 1px solid #ddd;
+  padding: 0.6rem 1rem;
+  text-align: center;
+}
+
+.history-table th {
+  background-color: #2563eb;
+  color: white;
+  font-weight: 600;
+}
+
+.history-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.history-table tr:hover {
+  background-color: #e2e8f0;
+}
+
+.winner.win {
+  color: green;
+  font-weight: bold;
+}
+
+.winner.lose {
+  color: red;
+  font-weight: bold;
+}
+
+.winner.draw {
+  color: gray;
+  font-style: italic;
+}
+
+/* Right side for button */
+.remove-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #ff416c, #ff4b2b);
+  border: none;
+  color: white;
+  font-weight: 600;
+  padding: 12px 20px;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(255, 75, 43, 0.6);
+  transition: background 0.3s ease;
+  z-index: 1001;
+}
+
+.remove-btn:hover {
+  background: linear-gradient(135deg, #ff4b2b, #ff416c);
+}
+
+/* Modal background */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal content */
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 320px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  animation: fadeInScale 0.3s ease forwards;
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-buttons {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: space-around;
+}
+
+.modal-buttons .btn {
+  padding: 8px 18px;
+  border-radius: 25px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  min-width: 100px;
+  transition: background 0.3s ease;
+}
+
+.btn.cancel {
+  background: #ccc;
+  color: #333;
+}
+
+.btn.cancel:hover {
+  background: #b3b3b3;
+}
+
+.btn.confirm {
+  background: #ff416c;
+  color: white;
+}
+
+.btn.confirm:hover {
+  background: #ff4b2b;
+}
+
+.charts-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 100px;
+}
+
+.history-table-container {
+  width: 420px;
+  max-height: 360px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  background: white;
+}

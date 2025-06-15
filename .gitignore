@@ -1,0 +1,12 @@
+# Environments
+.env
+.venv/
+venv/
+ENV/
+env/
+
+# VSCode, PyCharm, OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
