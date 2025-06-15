@@ -17,8 +17,8 @@ This project includes a backend (FastAPI), frontend (React), and a PostgreSQL da
 1. **Clone the repository:**
 
 ```bash
-git clone https://github.com/yourusername/your-repo.git
-cd your-repo
+git clone https://github.com/stepa997/rpsls_game.git
+cd rpsls_game
 ```
 
 2. **Create a `.env` file in the root directory (same level as docker-compose.yaml) with the following content:**

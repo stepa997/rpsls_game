@@ -37,6 +37,7 @@ class GameResult(Base):
     player_move_id = Column(Integer, ForeignKey("move.id"), nullable=False)
     computer_move_id = Column(Integer, ForeignKey("move.id"), nullable=False)
     result = Column(String, nullable=False)
+    session_id = Column(String, nullable=False, index=True)
 
     player_move = relationship("Move", foreign_keys=[player_move_id])
     computer_move = relationship("Move", foreign_keys=[computer_move_id])

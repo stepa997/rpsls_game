@@ -22,6 +22,13 @@ function App() {
   };
 
   useEffect(() => {
+    // 1. Start session
+    fetch(`${API_BASE}/start`, {
+      method: "GET",
+      credentials: "include",  // send cookies
+    });
+  
+    // 2. Fetch choices
     fetch(`${API_BASE}/choices`)
       .then((res) => res.json())
       .then((data) => setChoices(data));
@@ -32,6 +39,7 @@ function App() {
     const fetchHistory = () => {
       fetch(`${API_BASE}/games/history`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ number_of_last: 10 }),
       })
@@ -52,6 +60,7 @@ function App() {
     fetch(`${API_BASE}/play`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ player: id }),
     })
       .then((res) => res.json())
@@ -77,6 +86,7 @@ function App() {
   const handleRemove = () => {
     fetch(`${API_BASE}/results/truncate`, {
       method: "DELETE",
+      credentials: "include",
     })
       .then(res => {
         if (!res.ok) throw new Error("Failed to delete scoreboard");

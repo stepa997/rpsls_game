@@ -41,7 +41,7 @@ def get_random_choice(session):
     return random.choice(choices)
 
 
-def play_game_by_id(session, player_id: int):
+def play_game_by_id(session, player_id: int, session_id: str):
     player_move = session.get(Move, player_id)
     if not player_move:
         return {"error": "Invalid choice ID!"}
@@ -66,6 +66,7 @@ def play_game_by_id(session, player_id: int):
         player_move_id=player_move.id,
         computer_move_id=computer_move["id"],
         result=result,
+        session_id=session_id,
     )
     session.add(game_result)
     session.commit()
@@ -73,9 +74,10 @@ def play_game_by_id(session, player_id: int):
     return {"result": result, "player": player_move.id, "computer": computer_move["id"]}
 
 
-def get_last_n_games(session, last_n_numbers=10):
+def get_last_n_games(session, session_id: str, last_n_numbers=10):
     games = (
         session.query(GameResult)
+        .filter(GameResult.session_id == session_id)
         .order_by(GameResult.played_at.desc())
         .limit(last_n_numbers)
         .all()
@@ -93,6 +95,8 @@ def get_last_n_games(session, last_n_numbers=10):
     ]
 
 
-def remove_results(session):
-    session.query(GameResult).delete()
+def remove_results(session, session_id: str):
+    session.query(GameResult).filter(GameResult.session_id == session_id).delete(
+        synchronize_session=False
+    )
     session.commit()
