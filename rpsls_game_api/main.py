@@ -1,19 +1,25 @@
 import os
 from uuid import uuid4
 from dotenv import load_dotenv
-from fastapi import Response, Request
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends, Response, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from sqlalchemy.orm import Session
 from db.connection import get_connection
 from game.logic import (
     get_choices,
     get_random_choice,
     play_game_by_id,
     get_last_n_games,
+    get_top_results_today,
     remove_results,
 )
-from schemas.models import PlayRequest, GameResultsResponse, GameHistoryRequest
+from schemas.models import (
+    PlayRequest,
+    GameResultsResponse,
+    GameHistoryRequest,
+    LeaderboardRequest,
+)
 
 
 app = FastAPI()
@@ -51,9 +57,7 @@ def start(request: Request):
     if not session_id:
         session_id = str(uuid4())
         response = JSONResponse({"message": "New session created"})
-        response.set_cookie(
-            "session_id", session_id, httponly=True, max_age=60 * 60 * 24 * 7
-        )
+        response.set_cookie("session_id", session_id, httponly=True)
         return response
 
     return {"message": "Session already exists"}
@@ -109,6 +113,13 @@ def top_10_games(payload: GameHistoryRequest, request: Request):
             last_n_numbers=last_n_games,
         )
         return {"count": len(results), "data": results}
+
+
+@app.post("/leaderboard/today")
+def top_players_today(payload: LeaderboardRequest):
+    last_n_numbers = payload.last_n_numbers
+    with get_session() as session:
+        return get_top_results_today(session, last_n_numbers=last_n_numbers)
 
 
 @app.delete("/results/truncate")

@@ -28,3 +28,7 @@ class GameHistoryRequest(BaseModel):
     number_of_last: int = Field(
         ..., ge=1, le=100, description="Number of the last games (1-100)"
     )
+
+
+class LeaderboardRequest(BaseModel):
+    last_n_numbers: int = Field(10, ge=1, le=100)

@@ -1,8 +1,9 @@
 import os
 from dotenv import load_dotenv
-from datetime import datetime
+from datetime import datetime, timedelta
 import random
 import requests
+from sqlalchemy import func, and_
 from db.models import Move, GameResult
 
 # Load env file
@@ -93,6 +94,28 @@ def get_last_n_games(session, session_id: str, last_n_numbers=10):
         }
         for game in games
     ]
+
+
+def get_top_results_today(session, last_n_numbers=10):
+    today = datetime.utcnow().date()
+    tomorrow = today + timedelta(days=1)
+
+    results = (
+        session.query(GameResult.session_id, func.count(GameResult.id).label("wins"))
+        .filter(
+            and_(
+                GameResult.result == "win",
+                GameResult.played_at >= today,
+                GameResult.played_at < tomorrow,
+            )
+        )
+        .group_by(GameResult.session_id)
+        .order_by(func.count(GameResult.id).desc())
+        .limit(last_n_numbers)
+        .all()
+    )
+
+    return [{"session_id": r.session_id, "wins": r.wins} for r in results]
 
 
 def remove_results(session, session_id: str):

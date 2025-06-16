@@ -32,6 +32,9 @@ function App() {
     fetch(`${API_BASE}/choices`)
       .then((res) => res.json())
       .then((data) => setChoices(data));
+
+    // Fetch top players
+    fetchTopPlayers();
   }, [API_BASE]);
 
   // Get history every 0.5 seconds
@@ -66,6 +69,7 @@ function App() {
       .then((res) => res.json())
       .then((data) => {
         setResult(data);
+        fetchTopPlayers();
         setLoading(false);
       });
   };
@@ -83,6 +87,20 @@ function App() {
     return idOrName;
   };
 
+  const [topPlayers, setTopPlayers] = useState([]);
+
+  const fetchTopPlayers = () => {
+    fetch(`${API_BASE}/leaderboard/today`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ last_n_numbers: 10 }),
+    })
+      .then((res) => res.json())
+      .then((data) => setTopPlayers(data || []))
+      .catch(() => setTopPlayers([]));
+  };
+
   const handleRemove = () => {
     fetch(`${API_BASE}/results/truncate`, {
       method: "DELETE",
@@ -91,6 +109,7 @@ function App() {
       .then(res => {
         if (!res.ok) throw new Error("Failed to delete scoreboard");
         alert("Scoreboard removed!");
+        fetchTopPlayers();
       })
       .catch(err => alert(err.message));
   };
@@ -119,6 +138,28 @@ function App() {
       <div>
         <RemoveScoreboardButton onRemove={handleRemove} />
       </div>
+
+      {topPlayers.length > 0 && (
+        <div className="top-players-table-container">
+          <h2 style={{ textAlign: "right", marginRight: "2rem" }}>Top 10 Players Today</h2>
+          <table className="top-players-table">
+            <thead>
+              <tr>
+                <th>Player</th>
+                <th>Wins</th>
+              </tr>
+            </thead>
+            <tbody>
+              {topPlayers.map((player, idx) => (
+                <tr key={idx}>
+                  <td>{player.session_id}</td>
+                  <td>{player.wins}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <div className="choices">
         {choices.map((choice) => (
