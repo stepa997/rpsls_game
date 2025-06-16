@@ -1,6 +1,30 @@
 from datetime import datetime
-from typing import List
-from pydantic import BaseModel, Field
+from typing import List, Optional
+from pydantic import BaseModel, Field, EmailStr, constr
+
+
+class UserCreate(BaseModel):
+    name: str
+    email: EmailStr
+    password: constr(min_length=6)
+
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class GuestUser(BaseModel):
+    name: Optional[str] = "Guest"
+
+
+class UserOut(BaseModel):
+    id: int
+    name: Optional[str]
+    email: Optional[EmailStr]
+
+    class Config:
+        orm_mode = True
 
 
 class PlayRequest(BaseModel):

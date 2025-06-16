@@ -1,11 +1,8 @@
-import os
 from uuid import uuid4
-from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Depends, Response, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from sqlalchemy.orm import Session
-from db.connection import get_connection
+from db.get_db import get_db_from_env
 from game.logic import (
     get_choices,
     get_random_choice,
@@ -14,6 +11,7 @@ from game.logic import (
     get_top_results_today,
     remove_results,
 )
+from routes import users
 from schemas.models import (
     PlayRequest,
     GameResultsResponse,
@@ -23,26 +21,18 @@ from schemas.models import (
 
 
 app = FastAPI()
+app.include_router(users.router)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3030"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Load env file
-load_dotenv()
 
-# Get connection credentials
-db_user = os.getenv("DB_USER")
-db_password = os.getenv("DB_PASSWORD")
-db_host = os.getenv("DB_HOST")
-db_port = os.getenv("DB_PORT")
-db_name = os.getenv("DB_NAME")
-
-get_session = get_connection(db_user, db_password, db_host, db_port, db_name)
+get_session = get_db_from_env()
 
 
 @app.get("/")
