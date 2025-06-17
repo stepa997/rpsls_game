@@ -78,5 +78,22 @@ jobs:
       - name: Test API Health Endpoint
         run: curl http://localhost:8000/health
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Create .env file frontend
+        run: |
+          echo "REACT_APP_API_BASE_URL=${{ secrets.REACT_APP_API_BASE_URL }}" >> .env
+
+      - name: Install frontend dependencies
+        working-directory: rpsls_game_frontend
+        run: npm ci
+
+      - name: Run React tests
+        working-directory: rpsls_game_frontend
+        run: npm test -- --watchAll=false
+
       - name: Shut down containers
         run: docker compose down
