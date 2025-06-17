@@ -75,9 +75,9 @@ def test_get_top_results_today_returns_correct_order(session, populate_game_resu
     results = get_top_results_today(session, last_n_numbers=10)
 
     expected = [
-        {"session_id": "session2", "wins": 5},
-        {"session_id": "session1", "wins": 3},
-        {"session_id": "session3", "wins": 1},
+        {"session_id": "Guest session2", "wins": 5},
+        {"session_id": "Guest session1", "wins": 3},
+        {"session_id": "Guest session3", "wins": 1},
     ]
 
     assert results == expected

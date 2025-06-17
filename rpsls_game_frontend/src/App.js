@@ -21,21 +21,35 @@ function App() {
     spock: "🖖",
   };
 
+  const [user, setUser] = useState(null);
+
   useEffect(() => {
     // 1. Start session
     fetch(`${API_BASE}/start`, {
       method: "GET",
       credentials: "include",  // send cookies
     });
+
+    // 2. Get current user
+    fetch(`${API_BASE}/auth/me`, {
+      method: "GET",
+      credentials: "include",
+    })
+      .then(res => {
+        if (!res.ok) throw new Error("Not authenticated");
+        return res.json();
+      })
+      .then(data => setUser(data))
+      .catch(() => setUser(null));
   
-    // 2. Fetch choices
+    // 3. Fetch choices
     fetch(`${API_BASE}/choices`)
       .then((res) => res.json())
       .then((data) => setChoices(data));
 
-    // Fetch top players
+    // 4. Fetch top players
     fetchTopPlayers();
-  }, [API_BASE]);
+  }, [API_BASE, user]);
 
   // Get history every 0.5 seconds
   useEffect(() => {
@@ -133,7 +147,12 @@ function App() {
 
   return (
     <div className="container">
-      <h1>Rock–Paper–Scissors–Lizard–Spock</h1>
+      {user && (
+        <p className="user-info">
+          Logged in as <strong>{user.name}</strong>
+        </p>
+      )}
+
 
       <div>
         <RemoveScoreboardButton onRemove={handleRemove} />

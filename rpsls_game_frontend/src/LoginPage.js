@@ -44,6 +44,9 @@ function LoginPage() {
 
     if (res.ok) {
       navigate("/play");
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
     } else {
       alert("Guest login failed");
     }

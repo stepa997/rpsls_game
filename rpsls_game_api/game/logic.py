@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import random
 import requests
 from sqlalchemy import func, and_
-from db.models import Move, GameResult
+from db.models import Move, GameResult, User
 
 # Load env file
 load_dotenv()
@@ -115,7 +115,19 @@ def get_top_results_today(session, last_n_numbers=10):
         .all()
     )
 
-    return [{"session_id": r.session_id, "wins": r.wins} for r in results]
+    names = [name for (name,) in session.query(User.name).all()]
+
+    return [
+        {
+            "session_id": (
+                f"Guest {r.session_id[:8]}"
+                if r.session_id not in names
+                else r.session_id
+            ),
+            "wins": r.wins,
+        }
+        for r in results
+    ]
 
 
 def remove_results(session, session_id: str):

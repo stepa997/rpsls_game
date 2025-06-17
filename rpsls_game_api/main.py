@@ -2,6 +2,7 @@ from uuid import uuid4
 from fastapi import FastAPI, HTTPException, Depends, Response, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from starlette.middleware.sessions import SessionMiddleware
 from db.get_db import get_db_from_env
 from game.logic import (
     get_choices,
@@ -30,6 +31,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.add_middleware(SessionMiddleware, secret_key="secret123")
 
 
 get_session = get_db_from_env()
@@ -72,9 +75,13 @@ def random_choice():
 
 @app.post("/play")
 def play_round(payload: PlayRequest, request: Request):
-    session_id = request.cookies.get("session_id")
-    if not session_id:
-        raise HTTPException(status_code=400, detail="Missing session")
+    name = request.session.get("user", {}).get("name")
+    if name:
+        session_id = name
+    else:
+        session_id = request.cookies.get("session_id")
+        if not session_id:
+            raise HTTPException(status_code=400, detail="Missing session")
 
     with get_session() as session:
         result = play_game_by_id(session, payload.player, session_id=session_id)
@@ -86,9 +93,13 @@ def play_round(payload: PlayRequest, request: Request):
 
 @app.post("/games/history", response_model=GameResultsResponse)
 def top_10_games(payload: GameHistoryRequest, request: Request):
-    session_id = request.cookies.get("session_id")
-    if not session_id:
-        raise HTTPException(status_code=400, detail="Missing session")
+    name = request.session.get("user", {}).get("name")
+    if name:
+        session_id = name
+    else:
+        session_id = request.cookies.get("session_id")
+        if not session_id:
+            raise HTTPException(status_code=400, detail="Missing session")
 
     last_n_games = payload.number_of_last
 

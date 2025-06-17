@@ -27,7 +27,7 @@ body, html {
 }
 
 .login-form h2 {
-  color: white;
+  color: #1a0303;
   text-align: center;
 }
 
@@ -75,7 +75,7 @@ body, html {
 
 .or-separator {
   text-align: center;
-  color: #ddd;
+  color: #c7c7c7;
   font-size: 0.9rem;
 }
 
@@ -89,5 +89,3 @@ body, html {
   color: #1a0303;
   font-size: 14px;
 }
-
-

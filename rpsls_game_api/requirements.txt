@@ -1,5 +1,6 @@
-black==22.8.0
+black==25.1.0
 fastapi==0.115.4
+itsdangerous>=2.0
 passlib==1.7.4
 psycopg2-binary==2.9.10
 pydantic[email]==2.7.1
