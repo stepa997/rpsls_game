@@ -31,6 +31,8 @@ DB_NAME is name of the database to connect to
 DB_PORT is the port your local machine uses to connect to the PostgreSQL container
 API_PORT is the port on which the FastAPI backend will be exposed
 FRONTEND_PORT is the port on which the React frontend will be exposed
+REDIS_HOST is host addres of the Redis server (e.g., localhost or Docker service name)
+REDIS_PORT is the port your local machine uses to connect to the Redis container
 ```
 
 3. **Start the project with Docker Compose:**
