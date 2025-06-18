@@ -1,62 +1,41 @@
-import os
-from dotenv import load_dotenv
 from datetime import datetime, timedelta
-import random
-import requests
 from sqlalchemy import func, and_
+from db.get_db import get_redis_from_env
 from db.models import Move, GameResult, User
-
-# Load env file
-load_dotenv()
-
-# Get random url from .env
-RANDOM_URL = os.getenv("RANDOM_URL")
+from game.level_choice import get_random_choice, get_medium_choice, get_hard_choice
 
 
-def get_choices(session):
-    return [
-        {"id": m.id, "name": m.name}
-        for m in session.query(Move).order_by(Move.id).all()
-    ]
-
-
-def get_random_choice(session):
-    # your existing function returning list of dicts like {"id":1,"name":"rock"}
-    choices = get_choices(session)
-    try:
-        response = requests.get(RANDOM_URL, timeout=2)
-        response.raise_for_status()
-        data = response.json()
-        rand_num = data.get("random_number")
-        if isinstance(rand_num, int) and 1 <= rand_num <= 100:
-            # Map the random number (1-100) to the choices list
-            # If choices length != 100, scale accordingly
-            idx = (
-                (rand_num - 1) * len(choices) // 100
-            )  # integer index from 0 to len(choices)-1
-            return choices[idx]
-    except (requests.RequestException, ValueError, KeyError):
-        pass  # fallback on any failure
-
-    # fallback: choose randomly
-    return random.choice(choices)
-
-
-def play_game_by_id(session, player_id: int, session_id: str):
+def play_game_by_id(
+    session,
+    player_id: int,
+    session_id: str,
+    difficulty: str = "easy",
+    challenge_mode: bool = False,
+):
     player_move = session.get(Move, player_id)
     if not player_move:
         return {"error": "Invalid choice ID!"}
 
-    # Choose random computer
-    computer_move = get_random_choice(session)
+    # Get computer move
+    if difficulty == "hard":
+        computer_move_obj = get_hard_choice(session, session_id)
+    elif difficulty == "medium":
+        computer_move_obj = get_medium_choice(session, session_id)
+    else:
+        computer_move_obj = get_random_choice(session)
 
-    # ID which player beats
+    computer_move_id = (
+        computer_move_obj["id"]
+        if isinstance(computer_move_obj, dict)
+        else computer_move_obj.id
+    )
+
     beats_ids = [b.loser_id for b in player_move.wins_against]
 
-    # Result
-    if computer_move["id"] == player_move.id:
+    # Determine result
+    if computer_move_id == player_move.id:
         result = "draw"
-    elif computer_move["id"] in beats_ids:
+    elif computer_move_id in beats_ids:
         result = "win"
     else:
         result = "lose"
@@ -65,14 +44,86 @@ def play_game_by_id(session, player_id: int, session_id: str):
     game_result = GameResult(
         played_at=datetime.utcnow(),
         player_move_id=player_move.id,
-        computer_move_id=computer_move["id"],
+        computer_move_id=computer_move_id,
         result=result,
         session_id=session_id,
     )
     session.add(game_result)
     session.commit()
 
-    return {"result": result, "player": player_move.id, "computer": computer_move["id"]}
+    # --- CHALLENGE MODE LOGIC ---
+    if challenge_mode:
+        level_list = ["easy", "medium", "hard"]
+        redis_db = get_redis_from_env()
+        challenge = redis_db.hgetall(session_id)
+        if not challenge:
+            redis_db.hset(
+                session_id, mapping={"level": "easy", "round": 1, "wins": 0, "games": 0}
+            )
+            challenge = redis_db.hgetall(session_id)
+
+        round_wins = int(challenge["wins"])
+        round_games = int(challenge["games"])
+
+        # Update only if in challenge mode
+        if difficulty in level_list:
+            round_games += 1
+            if result == "win":
+                round_wins += 1
+
+            redis_db.hset(
+                session_id, mapping={"wins": round_wins, "games": round_games}
+            )
+
+            # End of round (10 games)
+            if round_games >= 10:
+                if round_wins >= 5:
+                    next_round = int(challenge["round"]) + 1
+                    if next_round > 3:
+                        redis_db.delete(session_id)  # Completed all rounds
+                    else:
+
+                        redis_db.hset(
+                            session_id,
+                            mapping={
+                                "level": level_list[next_round - 1],
+                                "round": next_round,
+                                "wins": 0,
+                                "games": 0,
+                            },
+                        )
+                else:
+                    # Fail - restart challenge
+                    redis_db.hset(
+                        session_id,
+                        mapping={
+                            "level": level_list[0],
+                            "round": 1,
+                            "wins": 0,
+                            "games": 0,
+                        },
+                    )
+
+    return {"result": result, "player": player_move.id, "computer": computer_move_id}
+
+
+def get_challenge_status(session_id: str):
+    redis_db = get_redis_from_env()
+    return redis_db.hgetall(session_id)
+
+
+def start_challenge_mode(session_id: str):
+    redis_db = get_redis_from_env()
+    redis_db.hset(
+        session_id,
+        mapping={
+            "level": "easy",
+            "round": 0,
+            "wins": 0,
+            "games": 0,
+        },
+    )
+    return "Start challenge mode"
 
 
 def get_last_n_games(session, session_id: str, last_n_numbers=10):

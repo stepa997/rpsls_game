@@ -9,7 +9,7 @@ body {
 
 .container {
   text-align: center;
-  padding: 3rem 1rem;
+  padding: 5rem 1rem;
 }
 
 h1 {
@@ -281,4 +281,72 @@ h1 {
 
 .user-info:hover {
   background: linear-gradient(135deg, #5a67d8, #6b46c1);
+}
+
+.difficulty-selector {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-shadow: 0 8px 15px rgba(102, 126, 234, 0.3);
+  z-index: 1000;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.3s ease;
+}
+
+.difficulty-selector:hover {
+  background: linear-gradient(135deg, #5a67d8, #6b46c1);
+}
+
+.difficulty-selector select {
+  background-color: white;
+  color: #333;
+  border: none;
+  border-radius: 8px;
+  padding: 0.2rem 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.challenge-toggle-button {
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: none;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-bottom: 1rem;
+}
+
+.challenge-toggle-button:hover {
+  background: linear-gradient(135deg, #556cd6, #5e3f9e);
+}
+
+.challenge-status {
+  margin: 1rem auto;
+  padding: 1rem;
+  width: fit-content;
+  border: 2px solid #667eea;
+  border-radius: 12px;
+  background-color: #f5f8ff;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+.challenge-status p {
+  margin: 0.25rem 0;
 }

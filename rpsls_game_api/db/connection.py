@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from contextlib import contextmanager
+import redis
 
 
 _engine = None
@@ -29,3 +30,7 @@ def get_connection(user: str, password: str, host: str, port: str, database: str
             session.close()
 
     return get_session
+
+
+def get_redis(host: str, port: str):
+    return redis.Redis(host=host, port=int(port), db=0, decode_responses=True)

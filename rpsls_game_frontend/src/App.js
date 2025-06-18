@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import RemoveScoreboardButton from "./RemoveButton";
 import { PieChart, Pie, Cell, Legend, Tooltip } from "recharts";
 import "./App.css";
+import ChallengeMode from "./ChallengeMode";
 
 function App() {
   const [choices, setChoices] = useState([]);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState([]);
+  const [isChallengeMode, setIsChallengeMode] = useState(false);
 
   const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
@@ -22,6 +24,7 @@ function App() {
   };
 
   const [user, setUser] = useState(null);
+  const [level, setLevel] = useState("easy");
 
   useEffect(() => {
     // 1. Start session
@@ -78,7 +81,7 @@ function App() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({ player: id }),
+      body: JSON.stringify({ player: id, level: level, challenge_mode: false }),
     })
       .then((res) => res.json())
       .then((data) => {
@@ -145,14 +148,67 @@ function App() {
     return distribution;
   };
 
+  useEffect(() => {
+    if (isChallengeMode) {
+      startChallenge();
+    }
+  }, [isChallengeMode]);
+
+  const startChallenge = () => {
+    fetch(`${API_BASE}/challenge/start`, {
+      method: "POST",
+      credentials: "include",
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to start challenge");
+        return res.json();
+      })
+  };
+
+  if (isChallengeMode) {
+    return (
+      <div className="container">
+        <div style={{ textAlign: "center", marginTop: "1rem" }}>
+          <button
+            onClick={() => setIsChallengeMode(false)}
+            className="challenge-toggle-button"
+          >
+            Exit Challenge Mode
+          </button>
+        </div>
+        <ChallengeMode />
+      </div>
+    );
+  }
+
   return (
     <div className="container">
+      <div style={{ textAlign: "center", marginTop: "1rem" }}>
+        <button
+          onClick={() => setIsChallengeMode(true)}
+          className="challenge-toggle-button"
+        >
+          Enter Challenge Mode
+        </button>
+      </div>
       {user && (
         <p className="user-info">
           Logged in as <strong>{user.name}</strong>
         </p>
       )}
 
+      <div className="difficulty-selector">
+        <label htmlFor="difficulty">Computer level:</label>
+        <select
+          id="difficulty"
+          value={level}
+          onChange={(e) => setLevel(e.target.value)}
+        >
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+      </div>
 
       <div>
         <RemoveScoreboardButton onRemove={handleRemove} />

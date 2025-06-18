@@ -18,6 +18,8 @@ jobs:
       DB_NAME: game
       FRONTEND_PORT: 3000
       API_PORT: 8000
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
 
     steps:
       - name: Checkout code
@@ -48,6 +50,8 @@ jobs:
           echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
           echo "FRONTEND_PORT=${{ secrets.FRONTEND_PORT }}" >> .env
           echo "API_PORT=${{ secrets.API_PORT }}" >> .env
+          echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env
+          echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> .env
 
 
       - name: Build and Start Docker Containers

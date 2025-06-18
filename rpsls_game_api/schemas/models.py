@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Literal
 from pydantic import BaseModel, Field, EmailStr, constr
 
 
@@ -29,6 +29,8 @@ class UserOut(BaseModel):
 
 class PlayRequest(BaseModel):
     player: int
+    level: Literal["easy", "medium", "hard"] = "easy"
+    challenge_mode: bool = False
 
 
 # Pydantic model

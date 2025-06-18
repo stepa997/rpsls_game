@@ -1,6 +1,6 @@
 import pytest
+from game.level_choice import get_choices
 from game.logic import (
-    get_choices,
     get_random_choice,
     play_game_by_id,
 )

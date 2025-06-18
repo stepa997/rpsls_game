@@ -4,10 +4,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.middleware.sessions import SessionMiddleware
 from db.get_db import get_db_from_env
+from game.level_choice import get_choices
 from game.logic import (
-    get_choices,
     get_random_choice,
     play_game_by_id,
+    get_challenge_status,
+    start_challenge_mode,
     get_last_n_games,
     get_top_results_today,
     remove_results,
@@ -84,11 +86,43 @@ def play_round(payload: PlayRequest, request: Request):
             raise HTTPException(status_code=400, detail="Missing session")
 
     with get_session() as session:
-        result = play_game_by_id(session, payload.player, session_id=session_id)
+        result = play_game_by_id(
+            session,
+            payload.player,
+            session_id=session_id,
+            difficulty=payload.level,
+            challenge_mode=payload.challenge_mode,
+        )
 
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])
     return result
+
+
+@app.get("/challenge/status")
+def play_round(request: Request):
+    name = request.session.get("user", {}).get("name")
+    if name:
+        session_id = name
+    else:
+        session_id = request.cookies.get("session_id")
+        if not session_id:
+            raise HTTPException(status_code=400, detail="Missing session")
+
+    return get_challenge_status(session_id)
+
+
+@app.post("/challenge/start")
+def play_round(request: Request):
+    name = request.session.get("user", {}).get("name")
+    if name:
+        session_id = name
+    else:
+        session_id = request.cookies.get("session_id")
+        if not session_id:
+            raise HTTPException(status_code=400, detail="Missing session")
+
+    return start_challenge_mode(session_id)
 
 
 @app.post("/games/history", response_model=GameResultsResponse)
@@ -125,7 +159,11 @@ def top_players_today(payload: LeaderboardRequest):
 
 @app.delete("/results/truncate")
 def delete_item(request: Request):
-    session_id = request.cookies.get("session_id")
+    name = request.session.get("user", {}).get("name")
+    if name:
+        session_id = name
+    else:
+        session_id = request.cookies.get("session_id")
     if not session_id:
         raise HTTPException(status_code=400, detail="Missing session")
 
