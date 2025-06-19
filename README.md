@@ -1,6 +1,6 @@
 # RPSLS Game Project
 
-This project includes a backend (FastAPI), frontend (React), and a PostgreSQL database, all orchestrated via Docker Compose.
+This project includes a backend (FastAPI), frontend (React), Redis and a PostgreSQL database, all orchestrated via Docker Compose.
 
 ---
 
@@ -40,7 +40,7 @@ REDIS_PORT is the port your local machine uses to connect to the Redis container
 ```bash
 docker-compose up -d --build
 ```
-This command will build and start the PostgreSQL database, the FastAPI backend, and the React frontend in separate Docker containers.
+This command will build and start the PostgreSQL database, the Redis memory storage, the FastAPI backend, and the React frontend in separate Docker containers.
 
 ## Access the application
 Backend API: http://localhost:${API_PORT}
