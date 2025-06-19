@@ -41,10 +41,15 @@ def login(user: UserLogin, request: Request):
             "id": db_user.id,
             "name": db_user.name,
             "email": db_user.email,
+            "is_admin": db_user.is_admin,
         }
 
         token = create_access_token({"sub": str(db_user.id)})
-        return {"access_token": token, "token_type": "bearer"}
+        return {
+            "access_token": token,
+            "token_type": "bearer",
+            "is_admin": db_user.is_admin,
+        }
 
 
 @router.get("/guest")

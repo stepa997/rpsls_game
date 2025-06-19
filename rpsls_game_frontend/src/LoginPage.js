@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
 
@@ -6,6 +7,7 @@ function LoginPage() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [mode, setMode] = useState("login"); // or "signup"
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -30,13 +32,43 @@ function LoginPage() {
     });
 
     if (response.ok) {
-      navigate("/play");
+      const data = await response.json();
+      localStorage.setItem("token", data.access_token);
+      if (data.is_admin) {
+        navigate("/admin");
+      } else {
+        navigate("/play");
+      }
     } else {
       alert("Authentication failed");
     }
   };
 
+  useEffect(() => {
+    fetch(process.env.REACT_APP_API_BASE_URL + "/auth/me", {
+      method: "GET",
+      credentials: "include",
+    })
+      .then(res => {
+        if (!res.ok) throw new Error("Not authenticated");
+        return res.json();
+      })
+      .then(data => {
+        if (data.is_admin) {
+          setIsAdmin(true);
+        }
+      })
+      .catch(() => {
+        setIsAdmin(false);
+      });
+  }, []);
+
   const handleGuest = async () => {
+    if (isAdmin) {
+      alert("Admin users cannot use guest mode.");
+      return;
+    }
+
     const res = await fetch(process.env.REACT_APP_API_BASE_URL + "/auth/guest", {
       method: "GET",
       credentials: "include",

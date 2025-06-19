@@ -14,7 +14,7 @@ from game.logic import (
     get_top_results_today,
     remove_results,
 )
-from routes import users
+from routes import users, admin
 from schemas.models import (
     PlayRequest,
     GameResultsResponse,
@@ -25,6 +25,7 @@ from schemas.models import (
 
 app = FastAPI()
 app.include_router(users.router)
+app.include_router(admin.router)
 
 app.add_middleware(
     CORSMiddleware,
