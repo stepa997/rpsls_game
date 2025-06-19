@@ -121,6 +121,42 @@ After completing a challenge, results are shown with a summary.
 A "Remove Scoreboard" button allows the user to delete all stored results.  
 A confirmation popup ensures the user does not delete data by accident.
 
+## 🛠️ Admin Panel
+
+The app includes an advanced **Admin Panel** with access restricted to authenticated users with `is_admin=true`. Upon login, admins are automatically redirected to the `/admin` route.
+
+### 🔒 Admin Authentication
+
+- Admins log in using the same form as regular users.
+- After authentication, the backend returns a JWT token with `is_admin: true`.
+- The frontend checks this flag and redirects admins to the dedicated dashboard.
+- All admin API routes are protected and require a valid token in the `Authorization: Bearer <token>` header.
+
+---
+
+### 📊 Admin Dashboard Features
+
+The Admin Panel provides insightful statistics about users and game activity.
+
+#### 👥 User & Game Summary
+- Total users
+- Active players (those who played at least one game)
+- Total number of games played
+
+#### 🥇 Most Popular Moves
+- Bar chart showing most used moves (e.g., Rock, Paper, Scissors, etc.)
+
+#### ⚔️ Game Outcomes
+- Pie chart of all game results (Wins, Losses, Draws)
+
+#### 📅 Games Per Day
+- Bar chart showing number of games played each day
+
+---
+
+![Admin Panel](README_IMAGES/admin.png)
+
+
 ## Additional Information
 The database will be initialized automatically on the first run.
 
