@@ -47,6 +47,80 @@ Backend API: http://localhost:${API_PORT}
 
 Frontend UI: http://localhost:${FRONTEND_PORT}
 
+### 📜 Game Rules
+
+The game is based on the extended version of Rock-Paper-Scissors:
+**Rock-Paper-Scissors-Lizard-Spock**
+
+- Rock crushes Scissors and Lizard  
+- Paper covers Rock and disproves Spock  
+- Scissors cuts Paper and decapitates Lizard  
+- Lizard eats Paper and poisons Spock  
+- Spock smashes Scissors and vaporizes Rock
+
+A random choice is selected by the server, and the player tries to outsmart it.
+
+## 🎮 Gameplay
+
+### 🔐 Authentication
+
+Upon launching the app, the user is offered three options:
+- **Sign Up** – Create an account with a username, email, and password
+- **Login** – Access the app using existing credentials
+- **Continue as Guest** – Play instantly without registration (temporary session)
+
+The user can switch between **Login** and **Sign Up** views by clicking the corresponding text links at the bottom of each form.
+
+**Login screen:**
+
+![Login](README_IMAGES/login.png)
+
+**Sign Up screen:**
+
+![Signup](README_IMAGES/signup.png)
+
+### 🧭 Main Menu
+
+Once authenticated, the user enters the main menu with the following options:
+- **Classic Mode**
+- **Challenge Mode**
+- **Scoreboard**
+- **Remove Scoreboard**
+
+![Gameplay](README_IMAGES/gameplay.png)
+
+### 🕹️ Playing the Game
+
+1. Choose your move: Rock, Paper, Scissors, Lizard, or Spock
+2. The server returns its move
+3. The result is displayed with a visual indicator (Win/Loss/Draw)
+
+### 📊 Scoreboard & History
+
+Each game result is recorded and displayed in the history table.  
+The scoreboard shows:
+- Date & time of the match
+- Player and opponent choices
+- Outcome (Win/Loss/Draw)
+
+A pie chart visualizes the overall performance.
+
+### 🏆 Challenge Mode
+
+Challenge Mode adds a competitive layer to the game:
+- 3 Rounds × 10 Matches each
+- Player must win at least **5 matches per round** to continue
+- Progress is tracked and stored in the database
+
+After completing a challenge, results are shown with a summary.
+
+![Challenge Mode](README_IMAGES/challenge_mode.png)
+
+### 🧹 Remove Scoreboard
+
+A "Remove Scoreboard" button allows the user to delete all stored results.  
+A confirmation popup ensures the user does not delete data by accident.
+
 ## Additional Information
 The database will be initialized automatically on the first run.
 
