@@ -91,10 +91,10 @@ function LoginPage() {
 
         {mode === "signup" && (
           <input
-            name="username"
+            name="name"
             type="text"
             placeholder="Username"
-            value={form.username}
+            value={form.name}
             onChange={handleChange}
             required
           />

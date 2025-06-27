@@ -122,11 +122,20 @@ function ChallengeMode() {
         {loading && <p className="loading">Thinking...</p>}
 
         {result && (
+          <div className="result-row">
             <div className="result">
-            <h3 className="result-message">Result: {result.result}</h3>
-            <p>Your move: {getMoveDisplay(result.player)}</p>
-            <p>Computer move: {getMoveDisplay(result.computer)}</p>
+              <h3 className="result-message">Result: {result.result}</h3>
+              <p>Your move: {getMoveDisplay(result.player)}</p>
+              <p>Computer move: {getMoveDisplay(result.computer)}</p>
             </div>
+
+            {result.comment && (
+              <div className="ai-comment">
+                <h4>🧠 AI Commentator:</h4>
+                <p>{result.comment}</p>
+              </div>
+            )}
+          </div>
         )}
     </div>
   );

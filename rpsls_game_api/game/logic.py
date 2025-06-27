@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from sqlalchemy import func, and_
+from ai.commentator import generate_comment
 from db.get_db import get_redis_from_env
 from db.models import Move, GameResult, User
 from game.level_choice import get_random_choice, get_medium_choice, get_hard_choice
@@ -50,6 +51,10 @@ def play_game_by_id(
     )
     session.add(game_result)
     session.commit()
+
+    ai_comment = generate_comment(
+        player_move, session.get(Move, computer_move_id), result
+    )
 
     # --- CHALLENGE MODE LOGIC ---
     if challenge_mode:
@@ -104,7 +109,12 @@ def play_game_by_id(
                         },
                     )
 
-    return {"result": result, "player": player_move.id, "computer": computer_move_id}
+    return {
+        "result": result,
+        "player": player_move.id,
+        "computer": computer_move_id,
+        "comment": ai_comment,
+    }
 
 
 def get_challenge_status(session_id: str):
