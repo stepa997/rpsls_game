@@ -1,8 +1,11 @@
 from uuid import uuid4
-from fastapi import FastAPI, HTTPException, Depends, Response, Request
+
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
+
 from db.get_db import get_db_from_env
 from game.level_choice import get_choices
 from game.logic import (
@@ -14,7 +17,7 @@ from game.logic import (
     get_top_results_today,
     remove_results,
 )
-from routes import users, admin
+from routes import users, admin, ai
 from schemas.models import (
     PlayRequest,
     GameResultsResponse,
@@ -22,10 +25,10 @@ from schemas.models import (
     LeaderboardRequest,
 )
 
-
 app = FastAPI()
 app.include_router(users.router)
 app.include_router(admin.router)
+app.include_router(ai.router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -36,6 +39,7 @@ app.add_middleware(
 )
 
 app.add_middleware(SessionMiddleware, secret_key="secret123")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 get_session = get_db_from_env()

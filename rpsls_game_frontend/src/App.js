@@ -154,6 +154,29 @@ function App() {
     }
   }, [isChallengeMode]);
 
+  useEffect(() => {
+    if (!result || !result.comment) return;
+
+    fetch(`${API_BASE}/speak`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: result.comment }),
+    })
+      .then(res => res.json())
+      .then(data => {
+        const audio = new Audio(API_BASE + data.url);
+        audio.play();
+
+        audio.onended = () => {
+          fetch(`${API_BASE}/speak?filename=${data.url}`, {
+            method: "DELETE",
+          });
+        };
+      })
+      .catch(console.error);
+
+  }, [result]);
+
   const startChallenge = () => {
     fetch(`${API_BASE}/challenge/start`, {
       method: "POST",

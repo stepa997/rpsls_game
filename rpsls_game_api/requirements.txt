@@ -1,5 +1,6 @@
 black==25.1.0
 fastapi==0.115.4
+gtts==2.5.4
 itsdangerous>=2.0
 openai==1.91.0
 passlib==1.7.4
